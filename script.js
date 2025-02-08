@@ -1,76 +1,47 @@
 let hundredths = 0;
 let seconds = 0;
 let minutes = 0;
-let timespanHundreths = 0;
+let timespanInHundreths = 0;
+let currentStageIndex = 0;
+let accumulatedTimeInHundreths = 0;
 let interval = null;
 let isRunning = false;
 let stage = null;
 let speed = null;
 let incline = null;
 const stagesMap = new Map([
-    ["Warm-up", {"speed": 3.5, "incline": 0}],
-    ["Brisk walk", {"speed": 5.5, "incline": 2}],
-    ["High Intensity", {"speed": 6, "incline": 3}],
-    ["Recovery", {"speed": 4, "incline": 1}],
-    ["Steady walk", {"speed": 5, "incline": 2}],
-    ["Cool-down", {"speed": 3.5, "incline": 0}]
+    ["Warm-up", {"speed": 3.5, "incline": 0, "duration": 5}],
+    ["Brisk walk", {"speed": 5.5, "incline": 2, "duration": 5}],
+    ["High Intensity", {"speed": 6, "incline": 3, "duration": 1}],
+    ["Recovery", {"speed": 4, "incline": 1, "duration": 2}],
+    ["High Intensity", {"speed": 6, "incline": 3, "duration": 1}],
+    ["Recovery", {"speed": 4, "incline": 1, "duration": 2}],
+    ["High Intensity", {"speed": 6, "incline": 3, "duration": 1}],
+    ["Recovery", {"speed": 4, "incline": 1, "duration": 2}],
+    ["High Intensity", {"speed": 6, "incline": 3, "duration": 1}],
+    ["Recovery", {"speed": 4, "incline": 1, "duration": 2}],
+    ["Steady walk", {"speed": 5, "incline": 2, "duration": 3}],
+    ["Cool-down", {"speed": 3.5, "incline": 0, "duration": 5}]
 ]);
 const stagesArray = Array.from(stagesMap.keys()); 
 
-function mintuesToHundreds(minutes) {
-    return minutes * 60 * 100;
+Number.prototype.mintuesToHundreds = function() {
+    return this * 60 * 100;
 }
 
 function updateUi() {
     updateDisplay();
-    timespanHundreths++;
-    if (timespanHundreths < mintuesToHundreds(5))
-    {
-        stage = stagesArray[0];
+    updateStageInfo();
+}
+
+function updateStageInfo() {
+    timespanInHundreths++;
+    if (timespanInHundreths < accumulatedTimeInHundreths + stagesMap.get(stagesArray[currentStageIndex]).duration.mintuesToHundreds()) {
+        stage = stagesArray[currentStageIndex];
     }
-    else if (timespanHundreths < mintuesToHundreds(10))
-    {
-        stage = stagesArray[1];
-    }
-    else if (timespanHundreths < mintuesToHundreds(11))
-    {
-        stage = stagesArray[2];
-    }
-    else if (timespanHundreths < mintuesToHundreds(13))
-    {
-        stage = stagesArray[3];
-    }
-    else if (timespanHundreths < mintuesToHundreds(14))
-    {
-        stage = stagesArray[2];
-    }
-    else if (timespanHundreths < mintuesToHundreds(16))
-    {
-        stage = stagesArray[3];
-    }
-    else if (timespanHundreths < mintuesToHundreds(17))
-    {
-        stage = stagesArray[2];
-    }
-    else if (timespanHundreths < mintuesToHundreds(19))
-    {
-        stage = stagesArray[3];
-    }
-    else if (timespanHundreths < mintuesToHundreds(20))
-    {
-        stage = stagesArray[2];
-    }
-    else if (timespanHundreths < mintuesToHundreds(22))
-    {
-        stage = stagesArray[3];
-    }
-    else if (timespanHundreths < mintuesToHundreds(25))
-    {
-        stage = stagesArray[4];
-    }
-    else if (timespanHundreths < mintuesToHundreds(30))
-    {
-        stage = stagesArray[5];
+    else {
+        accumulatedTimeInHundreths += stagesMap.get(stagesArray[currentStageIndex]).duration.mintuesToHundreds();
+        currentStageIndex++;
     }
     ({ speed, incline } = stagesMap.get(stage));
     document.getElementById("stage").innerText = stage;
@@ -111,7 +82,7 @@ function reset() {
     hundredths = 0;
     seconds = 0;
     minutes = 0;
-    timespanHundreths = 0;
+    timespanInHundreths = 0;
     document.getElementById("display").innerText = "00:00:00";
     document.getElementById("startPause").innerText = "Start";
 }
