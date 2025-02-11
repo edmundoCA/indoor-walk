@@ -10,7 +10,7 @@ let stage = null;
 let speed = null;
 let incline = null;
 
-const NUMBER_OF_INTERVALS = 4;
+const NUMBER_OF_INTERVALS = 5;
 const STAGES = {
     WARM_UP: "Warm-up",
     BRISK_WALK: "Brisk walk",
@@ -20,11 +20,11 @@ const STAGES = {
     COOL_DOWN: "Cool-down"
 };
 const STAGES_MAP = new Map([
-    [STAGES.WARM_UP, {"speed": 3.5, "incline": 0, "duration": 5}],
-    [STAGES.BRISK_WALK, {"speed": 5.5, "incline": 2, "duration": 5}],
-    [STAGES.HIGH_INTENSITY, {"speed": 6, "incline": 3, "duration": 1}],
-    [STAGES.RECOVERY, {"speed": 4, "incline": 1, "duration": 2}],
-    [STAGES.STEADY_WALK, {"speed": 5, "incline": 2, "duration": 3}],
+    [STAGES.WARM_UP, {"speed": 4, "incline": 0, "duration": 5}],
+    [STAGES.BRISK_WALK, {"speed": 6, "incline": 2, "duration": 5}],
+    [STAGES.HIGH_INTENSITY, {"speed": 6.5, "incline": 4, "duration": 1}],
+    [STAGES.RECOVERY, {"speed": 4, "incline": 1, "duration": 1.5}],
+    [STAGES.STEADY_WALK, {"speed": 5.5, "incline": 2, "duration": 2.5}],
     [STAGES.COOL_DOWN, {"speed": 3.5, "incline": 0, "duration": 5}]
 ]);
 
