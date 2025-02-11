@@ -50,13 +50,11 @@ function updateUi() {
 function updateStageInfo() {
     elapsedTimeInHundredths++;
     const currentStageDuration = STAGES_MAP.get(ROUTINE[currentStageIndex]).duration.mintuesToHundreds();
-    if (elapsedTimeInHundredths < accumulatedStagesDuration + currentStageDuration) {
-        stage = ROUTINE[currentStageIndex];
-    }
-    else {
+    if (elapsedTimeInHundredths >= accumulatedStagesDuration + currentStageDuration) {
         accumulatedStagesDuration += currentStageDuration;
         currentStageIndex++;
     }
+    stage = ROUTINE[currentStageIndex];
     ({ speed, incline } = STAGES_MAP.get(stage));
     document.getElementById("stage").innerText = stage;
     document.getElementById("speed").innerText = speed;
