@@ -1,29 +1,42 @@
 let hundredths = 0;
 let seconds = 0;
 let minutes = 0;
-let timespanInHundreths = 0;
+let elapsedTimeInHundredths = 0;
 let currentStageIndex = 0;
-let accumulatedTimeInHundreths = 0;
+let accumulatedStagesDuration = 0;
 let interval = null;
 let isRunning = false;
 let stage = null;
 let speed = null;
 let incline = null;
-const stagesMap = new Map([
-    ["Warm-up", {"speed": 3.5, "incline": 0, "duration": 5}],
-    ["Brisk walk", {"speed": 5.5, "incline": 2, "duration": 5}],
-    ["High Intensity", {"speed": 6, "incline": 3, "duration": 1}],
-    ["Recovery", {"speed": 4, "incline": 1, "duration": 2}],
-    ["High Intensity", {"speed": 6, "incline": 3, "duration": 1}],
-    ["Recovery", {"speed": 4, "incline": 1, "duration": 2}],
-    ["High Intensity", {"speed": 6, "incline": 3, "duration": 1}],
-    ["Recovery", {"speed": 4, "incline": 1, "duration": 2}],
-    ["High Intensity", {"speed": 6, "incline": 3, "duration": 1}],
-    ["Recovery", {"speed": 4, "incline": 1, "duration": 2}],
-    ["Steady walk", {"speed": 5, "incline": 2, "duration": 3}],
-    ["Cool-down", {"speed": 3.5, "incline": 0, "duration": 5}]
+
+const NUMBER_OF_INTERVALS = 4;
+const STAGES = {
+    WARM_UP: "Warm-up",
+    BRISK_WALK: "Brisk walk",
+    HIGH_INTENSITY: "High Intensity",
+    RECOVERY: "Recovery",
+    STEADY_WALK: "Steady walk",
+    COOL_DOWN: "Cool-down"
+};
+const STAGES_MAP = new Map([
+    [STAGES.WARM_UP, {"speed": 3.5, "incline": 0, "duration": 5}],
+    [STAGES.BRISK_WALK, {"speed": 5.5, "incline": 2, "duration": 5}],
+    [STAGES.HIGH_INTENSITY, {"speed": 6, "incline": 3, "duration": 1}],
+    [STAGES.RECOVERY, {"speed": 4, "incline": 1, "duration": 2}],
+    [STAGES.STEADY_WALK, {"speed": 5, "incline": 2, "duration": 3}],
+    [STAGES.COOL_DOWN, {"speed": 3.5, "incline": 0, "duration": 5}]
 ]);
-const stagesArray = Array.from(stagesMap.keys()); 
+
+const PREP = [STAGES.WARM_UP, STAGES.BRISK_WALK];
+const INTERVALS = [STAGES.HIGH_INTENSITY, STAGES.RECOVERY];
+const WIND_DOWN = [STAGES.STEADY_WALK, STAGES.COOL_DOWN];
+const ROUTINE = [];
+ROUTINE.push(...PREP);
+for (let i = 0; i < NUMBER_OF_INTERVALS; i++) {
+    ROUTINE.push(...INTERVALS);
+}
+ROUTINE.push(...WIND_DOWN);
 
 Number.prototype.mintuesToHundreds = function() {
     return this * 60 * 100;
@@ -35,15 +48,16 @@ function updateUi() {
 }
 
 function updateStageInfo() {
-    timespanInHundreths++;
-    if (timespanInHundreths < accumulatedTimeInHundreths + stagesMap.get(stagesArray[currentStageIndex]).duration.mintuesToHundreds()) {
-        stage = stagesArray[currentStageIndex];
+    elapsedTimeInHundredths++;
+    const currentStageDuration = STAGES_MAP.get(ROUTINE[currentStageIndex]).duration.mintuesToHundreds();
+    if (elapsedTimeInHundredths < accumulatedStagesDuration + currentStageDuration) {
+        stage = ROUTINE[currentStageIndex];
     }
     else {
-        accumulatedTimeInHundreths += stagesMap.get(stagesArray[currentStageIndex]).duration.mintuesToHundreds();
+        accumulatedStagesDuration += currentStageDuration;
         currentStageIndex++;
     }
-    ({ speed, incline } = stagesMap.get(stage));
+    ({ speed, incline } = STAGES_MAP.get(stage));
     document.getElementById("stage").innerText = stage;
     document.getElementById("speed").innerText = speed;
     document.getElementById("incline").innerText = incline;
@@ -82,7 +96,7 @@ function reset() {
     hundredths = 0;
     seconds = 0;
     minutes = 0;
-    timespanInHundreths = 0;
+    elapsedTimeInHundredths = 0;
     document.getElementById("display").innerText = "00:00:00";
     document.getElementById("startPause").innerText = "Start";
 }
