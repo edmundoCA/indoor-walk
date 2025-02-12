@@ -1,7 +1,7 @@
 let hundredths = 0;
 let seconds = 0;
 let minutes = 0;
-let elapsedTimeInHundredths = 0;
+let elapsedTimeInMilliseconds = 0;
 let currentStageIndex = 0;
 let accumulatedStagesDuration = 0;
 let interval = null;
@@ -9,6 +9,7 @@ let isRunning = false;
 let stage = null;
 let speed = null;
 let incline = null;
+let workoutStartDate = null;
 
 const NUMBER_OF_INTERVALS = 5;
 const STAGES = {
@@ -38,8 +39,8 @@ for (let i = 0; i < NUMBER_OF_INTERVALS; i++) {
 }
 ROUTINE.push(...WIND_DOWN);
 
-Number.prototype.mintuesToHundreds = function() {
-    return this * 60 * 100;
+Number.prototype.minutesToMilliseconds = function() {
+    return this * 60 * 1000;
 }
 
 function updateUi() {
@@ -48,9 +49,9 @@ function updateUi() {
 }
 
 function updateStageInfo() {
-    elapsedTimeInHundredths++;
-    const currentStageDuration = STAGES_MAP.get(ROUTINE[currentStageIndex]).duration.mintuesToHundreds();
-    if (elapsedTimeInHundredths >= accumulatedStagesDuration + currentStageDuration) {
+    elapsedTimeInMilliseconds = new Date() - workoutStartDate;
+    const currentStageDuration = STAGES_MAP.get(ROUTINE[currentStageIndex]).duration.minutesToMilliseconds();
+    if (elapsedTimeInMilliseconds >= accumulatedStagesDuration + currentStageDuration) {
         accumulatedStagesDuration += currentStageDuration;
         currentStageIndex++;
     }
@@ -62,15 +63,9 @@ function updateStageInfo() {
 }
 
 function updateDisplay() {
-    hundredths++;
-    if (hundredths === 100) {
-        hundredths = 0;
-        seconds++;
-    }
-    if (seconds === 60) {
-        seconds = 0;
-        minutes++;
-    }
+    seconds = Math.floor((elapsedTimeInMilliseconds / 1000) % 60);
+    minutes = Math.floor((elapsedTimeInMilliseconds / 60000) % 60);
+    hundredths = Math.floor((elapsedTimeInMilliseconds / 10) % 100);
     document.getElementById("display").innerText =
         (minutes < 10 ? "0" : "") + minutes + ":" +
         (seconds < 10 ? "0" : "") + seconds + "." +
@@ -81,7 +76,9 @@ function startPause() {
     if (isRunning) {
         clearInterval(interval);
         document.getElementById("startPause").innerText = "Start";
+        // TODO: Handle how the pause impacts the current timer logic.
     } else {
+        workoutStartDate ??= new Date();
         interval = setInterval(updateUi, 10);
         document.getElementById("startPause").innerText = "Pause";
     }
@@ -90,11 +87,12 @@ function startPause() {
 
 function reset() {
     clearInterval(interval);
+    workoutStartDate = null;
     isRunning = false;
     hundredths = 0;
     seconds = 0;
     minutes = 0;
-    elapsedTimeInHundredths = 0;
+    elapsedTimeInMilliseconds = 0;
     document.getElementById("display").innerText = "00:00:00";
     document.getElementById("startPause").innerText = "Start";
 }
